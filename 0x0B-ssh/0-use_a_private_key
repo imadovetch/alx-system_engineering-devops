@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# connect to server shcool
+
+ssh -i ~/.ssh/school ubuntu54.166.164.192
