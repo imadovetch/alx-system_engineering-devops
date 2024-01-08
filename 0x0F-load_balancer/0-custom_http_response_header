@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# configure web-02 to be identical to web-01
+
+sudo apt-get -y update
+sudo apt-get -y install nginx
+
+sudo chown -R "$USER" /etc/nginx/sites-available
+sudo chown -R "$USER" /var/www
+
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+
+
+echo "server {
+	listen 80;
+	listen [::]:80;
+    add_header X-Served-By $HOSTNAME;
+	root /var/www/html;
+	index index.nginx-debian.html;
+	location /redirect_me {
+		return 301 https://en.wikipedia.org/wiki/Nginx;
+	}
+	error_page 404 /error_404.html;
+	location /404 {
+		root /etc/html;
+		internal;
+	}
+}" > /etc/nginx/sites-available/default
+
+sudo ufw allow 'Nginx HTTP'
+
+sudo mkdir  /var/www/html/
+sudo touch /var/www/html/index
+
+echo "Hello World!" > /var/www/html/index.nginx-debian.html
+
+echo -e "Ceci n'est pas une page" > /var/www/html/error_404.html
+
+sudo nginx -t
+
+sudo service nginx restart
