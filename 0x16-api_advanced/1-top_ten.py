@@ -1,25 +1,28 @@
 #!/usr/bin/python3
-""" Top 10 subscribers """
-import requests
+
+""" function print title """
+
+from requests import get
 
 
 def top_ten(subreddit):
-    """Get top 10 subscribers"""
-    req = requests.get(
-        f"https://www.reddit.com/r/{subreddit}/hot.json",
-        headers={},
-        params={"limit": 10},
-    )
+    """ function """
 
-    if req.status_code == 200:
-        data = req.json().get("data")
-        if data and "children" in data:
-            for child in data["children"]:
-                if "data" in child and "title" in child["data"]:
-                    print(child["data"]["title"])
-                else:
-                    print("Invalid post format: ", child)
-        else:
-            print("No data returned from Reddit.")
-    else:
-        print(None)
+    if subreddit is None or not isinstance(subreddit, str):
+        print("None")
+
+    user_agent = {'User-agent': 'Google Chrome Version 81.0.4044.129'}
+    params = {'limit': 10}
+    url = 'https://www.reddit.com/r/{}/hot/.json'.format(subreddit)
+
+    response = get(url, headers=user_agent, params=params)
+    results = response.json()
+
+    try:
+        my_data = results.get('data').get('children')
+
+        for i in my_data:
+            print(i.get('data').get('title'))
+
+    except Exception:
+        print("None")
